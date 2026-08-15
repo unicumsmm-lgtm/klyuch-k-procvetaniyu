@@ -20,7 +20,7 @@ export default function IntentScreen({ onSubmit }) {
 
   return (
     <div className="screen intent-screen">
-      <h1>🔑 Ключ к процветанию</h1>
+      <h1>Ключ к процветанию</h1>
       <p className="subtitle">
         Сформулируй своё желание так, будто оно уже исполнилось. Пиши в
         настоящем времени, от первого лица.

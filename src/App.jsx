@@ -100,8 +100,16 @@ export default function App() {
 
   const deckMeta = currentDeckName ? DECKS[currentDeckName] : null
 
+  // От показа обложки выпавшей колоды и дальше (обложка/выбор карты/вопросы/
+  // финал) у экрана свой ЕДИНЫЙ фон — не зависящий от темы Telegram
+  // (светлая/тёмная). Раньше фон брался из --tg-bg-color, а текст всегда
+  // оставался светлым — на светлой теме Telegram текст становился не виден.
+  const useUnifiedBg = screen === 'cover' || screen === 'choose' || screen === 'card' || screen === 'finish'
+
   return (
-    <div className="app">
+    <>
+      {useUnifiedBg && <div className="unified-bg" />}
+      <div className="app">
       {screen === 'intent' && <IntentScreen onSubmit={handleIntentSubmit} />}
 
       {screen === 'board' && (
@@ -138,6 +146,7 @@ export default function App() {
       )}
 
       {screen === 'finish' && <FinishScreen intent={intent} onRestart={handleRestart} />}
-    </div>
+      </div>
+    </>
   )
 }
