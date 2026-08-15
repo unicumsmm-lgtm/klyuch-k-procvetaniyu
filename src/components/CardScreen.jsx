@@ -2,21 +2,15 @@ import { useState } from 'react'
 import { getQuestionsForDeck, isAnswerSubstantive, REWARD_MESSAGE } from '../data/cards.js'
 import { hapticSuccess } from '../telegram.js'
 
-// Напутствие после ответа на вопросы — настоящих индивидуальных напутствий
-// на каждую из 618 карточек у Рамиля нет, поэтому используем тёплое
-// обобщённое напутствие по типу колоды (негативная / позитивная).
-const GUIDANCE = {
-  negative:
-    'Ты прожил(а) это осознание — а значит, оно больше не управляет тобой из тени. То, что названо и увидено, теряет над нами власть. Забери с собой этот маленький шаг вперёд.',
-  positive:
-    'Позволь этой карте усилить тебя. То, что откликнулось в твоих ответах — уже начало работать. Забери это с собой в следующий шаг игры и в жизнь за её пределами.',
-}
-
-// Карту (текст плохого качества на фото) не показываем — только
-// расшифрованный текст. Дальше — вопросы (свои для 7 негативных колод,
+// Напутствие после ответа на вопросы приходит из пропа guidance — App.jsx
+// выбирает его через pickGuidance() из GUIDANCE_POOL (cards.js) в момент
+// выбора карты, следя за тем, чтобы текст не повторялся в течение партии.
+//
+// Карту (текст плохого качества на фото) не показываем, только
+// расшифрованный текст. Дальше идут вопросы (свои для 7 негативных колод,
 // универсальные для позитивных, ни одного для "Награда") с проверкой,
 // что ответ содержательный, а не случайные буквы/цифры.
-export default function CardScreen({ card, onNextTurn }) {
+export default function CardScreen({ card, guidance, onNextTurn }) {
   const questions = getQuestionsForDeck(card.deckName)
   const isReward = card.mode === 'reward'
 
@@ -73,7 +67,7 @@ export default function CardScreen({ card, onNextTurn }) {
                 />
                 {invalid && (
                   <p className="answer-warning">
-                    Напиши, пожалуйста, развёрнутый ответ по существу — не просто пару
+                    Напиши, пожалуйста, развёрнутый ответ по существу, а не просто пару
                     случайных символов.
                   </p>
                 )}
@@ -89,7 +83,7 @@ export default function CardScreen({ card, onNextTurn }) {
       {!isReward && guidanceShown && (
         <div className="card-insight">
           <div className="card-insight-block">
-            <p>{GUIDANCE[card.mode]}</p>
+            <p>{guidance}</p>
           </div>
         </div>
       )}

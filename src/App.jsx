@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { DECKS, pickGameDecks, drawFullDeck } from './data/cards.js'
+import { DECKS, pickGameDecks, drawFullDeck, pickGuidance } from './data/cards.js'
 import { hapticTap, hapticSuccess } from './telegram.js'
 
 import IntentScreen from './components/IntentScreen.jsx'
@@ -28,6 +28,8 @@ export default function App() {
   const [currentDeckName, setCurrentDeckName] = useState(null)
   const [choices, setChoices] = useState([])
   const [currentCard, setCurrentCard] = useState(null)
+  const [currentGuidance, setCurrentGuidance] = useState('')
+  const [usedGuidance, setUsedGuidance] = useState([])
   const [lastRoll, setLastRoll] = useState(null)
   const [dice, setDice] = useState({ rolling: false, face: null })
   const diceIntervalRef = useRef(null)
@@ -38,6 +40,7 @@ export default function App() {
     setIntent(text)
     setGameDecks(pickGameDecks(TOTAL_TURNS))
     setTurnIndex(0)
+    setUsedGuidance([])
     setScreen('board')
   }
 
@@ -72,6 +75,11 @@ export default function App() {
 
   function handlePickCard(card) {
     setCurrentCard(card)
+    if (card.mode === 'negative' || card.mode === 'positive') {
+      const text = pickGuidance(card.mode, usedGuidance)
+      setCurrentGuidance(text)
+      setUsedGuidance((prev) => [...prev, text])
+    }
     setScreen('card')
   }
 
@@ -93,6 +101,8 @@ export default function App() {
     setTurnIndex(0)
     setCurrentDeckName(null)
     setCurrentCard(null)
+    setCurrentGuidance('')
+    setUsedGuidance([])
     setLastRoll(null)
     setDice({ rolling: false, face: null })
     setScreen('intent')
@@ -140,7 +150,7 @@ export default function App() {
       )}
 
       {screen === 'card' && currentCard && (
-        <CardScreen card={currentCard} onNextTurn={handleNextTurn} />
+        <CardScreen card={currentCard} guidance={currentGuidance} onNextTurn={handleNextTurn} />
       )}
 
       {screen === 'finish' && <FinishScreen intent={intent} onRestart={handleRestart} />}

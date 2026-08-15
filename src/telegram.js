@@ -25,6 +25,17 @@ export function hapticSuccess() {
   tg?.HapticFeedback?.notificationOccurred?.('success')
 }
 
+// Открывает внешнюю ссылку (например, Instagram) — внутри Telegram через
+// его собственный метод (иначе обычные ссылки могут вести себя не так, как
+// ожидается, внутри WebView), в обычном браузере — обычным window.open.
+export function openLink(url) {
+  if (tg?.openLink) {
+    tg.openLink(url)
+  } else if (typeof window !== 'undefined') {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+}
+
 // ЗАГЛУШКА НА БУДУЩЕЕ: тут же удобно будет добавить авторизацию через
 // tg.initData (initDataUnsafe.user), когда дойдёт очередь до сохранения
 // прогресса на сервере.
