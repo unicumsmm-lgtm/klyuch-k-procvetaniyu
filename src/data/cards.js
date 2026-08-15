@@ -911,26 +911,24 @@ export function pickGameDecks(count = 5) {
   return shuffle(DECK_NAMES).slice(0, count)
 }
 
-// Достаёт карточки колоды для показа рубашкой вверх. По умолчанию — все,
-// но не больше MAX_CHOICES: на экране комфортно помещается 24 карты,
-// поэтому если в колоде их больше, случайно выбираем 24 из них (какие
-// именно — решает та же перетасовка, что и порядок карт).
-const MAX_CHOICES = 24
-
-export function drawFullDeck(deckName, maxCount = MAX_CHOICES) {
+// Достаёт ВСЕ карточки колоды (перемешанные) для показа рубашкой вверх —
+// без ограничения по количеству (раньше был лимит 24, убран по просьбе
+// Рамиля). Вопросы и напутствие берутся на уровне колоды (getQuestionsForDeck
+// / GUIDANCE в CardScreen.jsx), а не на уровне конкретной карты, так что
+// каждая из карт — включая все 35 у самой большой колоды — уже полностью
+// покрыта существующей логикой, без необходимости дописывать что-то новое.
+export function drawFullDeck(deckName) {
   const deck = DECKS[deckName]
   if (!deck) return []
-  return shuffle(deck.titles)
-    .slice(0, Math.min(maxCount, deck.titles.length))
-    .map((title, i) => ({
-      id: `${deckName}__${i}`,
-      deckName,
-      title,
-      mode: deck.mode,
-      symbol: deck.symbol,
-      color: deck.color,
-      cover: deck.cover,
-    }))
+  return shuffle(deck.titles).map((title, i) => ({
+    id: `${deckName}__${i}`,
+    deckName,
+    title,
+    mode: deck.mode,
+    symbol: deck.symbol,
+    color: deck.color,
+    cover: deck.cover,
+  }))
 }
 
 // Простая эвристика: проверяет, что ответ похож на осмысленный текст, а не
